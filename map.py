@@ -24,6 +24,9 @@ class Map:
         self.blocks = {}
         self.__genarate_map()
 
+    '''
+    根据地图大小生产地图，并根据包裹占比和障碍物占比生成包裹和障碍物
+    '''
     def __genarate_map(self):
         if self.size < 0:
             raise Exception("Invalid map size!", self.size)
@@ -39,3 +42,6 @@ class Map:
             x = self.__blocks[i][0]
             y = self.__blocks[i][1]
             self.blocks[str(x)+'|'+str(y)] = "B"
+
+    def update_map(self):
+        pass
