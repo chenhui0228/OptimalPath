@@ -23,7 +23,6 @@ class Map:
         self.packages = {}
         self.blocks = {}
         self.__genarate_map()
-        pass
 
     def __genarate_map(self):
         if self.size < 0:
@@ -40,9 +39,3 @@ class Map:
             x = self.__blocks[i][0]
             y = self.__blocks[i][1]
             self.blocks[str(x)+'|'+str(y)] = "B"
-
-map = Map(5)
-
-print map.blocks
-print "========================="
-print map.packages
