@@ -1,17 +1,28 @@
-import main as pf
+graph = {'A': set(['A', 'B', 'F', 'D', 'E', 'C']),
+         'B': set(['A', 'B', 'F', 'D', 'E', 'C']),
+         'C': set(['A', 'B', 'F', 'D', 'E', 'C']),
+         'D': set(['A', 'B', 'F', 'D', 'E', 'C']),
+         'E': set(['A', 'B', 'F', 'D', 'E', 'C']),
+         'F': set(['A', 'B', 'F', 'D', 'E', 'C'])
+         }
+
+def dfs_paths(graph, start, goal):
+    stack = [(start, [start])]
+    while stack:
+        (vertex, path) = stack.pop()
+        for next in graph[vertex] - set(path):
+            if next == goal:
+                yield path + [next]
+            else:
+                stack.append((next, path + [next]))
+
+import time
+t1 = time.time()
+print list(dfs_paths(graph, 'A', 'F'))
+t2 = time.time()
+print t2 - t1
 
 
-def test_maze():
-    a = pf.PackageMap()
-    walls = ((0, 5), (1, 0), (1, 1), (1, 5), (2, 3),
-             (3, 1), (3, 2), (3, 5), (4, 1), (4, 4), (5, 1))
-    a.init(6, 6, walls)
-    path = a.find_path((0, 0), (5, 5))
-    path2 = a.find_path((5, 5), (0, 0))
-    print path
-    print path2
-    man = pf.MailMan()
-    man.go(path[0])
-
-if __name__ == '__main__':
-    test_maze()
+packages = [(1,1,10), (5,6,10)]
+for package in packages:
+    print package
