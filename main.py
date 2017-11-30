@@ -111,6 +111,7 @@ class MailMan(object):
 
     def init(self):
         self.blocks = []
+        self.packages = []
 
     def reset(self):
         self.current = (0, 0)
@@ -144,6 +145,13 @@ class MailMan(object):
             self.x = x
             self.y = y
 
+    def run(self):
+        pass
+
+
+    def choose(self):
+        pass
+
 def test():
     a = PackageMap()
     walls = ((0, 5), (1, 0), (1, 1), (1, 5), (2, 3),
@@ -161,7 +169,7 @@ if __name__ == '__main__':
     mailman.init()
     packagemap = PackageMap()
     packagemap.init(12, 12, mailman.blocks)
-
+    mailman.run()
     test()
 
 
