@@ -1,47 +1,65 @@
-#!/usr/bin/python
-# -*- coding: UTF-8 -*-
+import requests
+import json
 
-import const
-import random
-import itertools as its
+BASE_URL = 'http://10.2.5.64/test'
 
-'''
-定义障碍物和非障碍物也非包裹的常量
-'''
-const.BLOCK = -1
-const.NORMAL = -2
 
-const.BLOCK_RATE = 0.2
-const.PACKAGE_RATE = 0.4
+class RequestAPI:
+    def __init__(self):
+        pass
+
+    def initialize(self, url, data=None):
+        res = requests.post(url, data=data)
+        return json.load(res.text)
+
+    def go(self, url, data):
+        res = requests.post(url, data=data)
+        return json.load(res.text)
+
 
 class Map:
-    def __init__(self, size=10):
-        self.size = size
-        self.__vertexes = list(its.product(range(0, self.size), range(0, self.size)))
+    def __init__(self):
+        self.request = RequestAPI()
+        self.ai = None
+        self.walls = []
+        self.score = 0
         self.__packages = []
-        self.__blocks = []
-        self.packages = {}
-        self.blocks = {}
+        self.packages = []
+        self.id = ''
+        self.end = False
+        self.package_newest = False
+        # self.direction = ''
         self.__genarate_map()
 
-    '''
-    根据地图大小生产地图，并根据包裹占比和障碍物占比生成包裹和障碍物
-    '''
     def __genarate_map(self):
-        if self.size < 0:
-            raise Exception("Invalid map size!", self.size)
-        package_total_number = int(self.size * self.size * const.PACKAGE_RATE)
-        self.__packages = random.sample(self.__vertexes, package_total_number)
-        block_total_number = int(self.size * self.size * const.BLOCK_RATE)
-        self.__blocks = random.sample(list(set(self.__vertexes) ^ (set(self.__packages))), block_total_number)
-        for i in range(package_total_number):
-            x = self.__packages[i][0]
-            y = self.__packages[i][1]
-            self.packages[str(x)+'|'+str(y)] = self.size
-        for i in range(block_total_number):
-            x = self.__blocks[i][0]
-            y = self.__blocks[i][1]
-            self.blocks[str(x)+'|'+str(y)] = "B"
+        data = {'name': 'chenhui'}
+        ret = self.request.initialize('http://10.2.5.64/test')
+        if ret.msg == 'OK':
+            self.ai = (ret.state.ai.x, ret.state.ai.y)
+            for w in ret.state.walls:
+                self.walls.append((w.x, w.y))
+            for p in ret.state.jobs:
+                self.__packages = [(p.x, p.y)]
+                self.packages.append((p.x, p.y, p.value))
+            self.score = ret.state.score
+            self.id = ret.id
 
-    def update_map(self):
-        pass
+    def go(self, direction):
+        url = 'http://10.2.5.64/test/' + self.id + '/move'
+        data = {'direction': direction}
+        __packages_now = []
+        packages_now = []
+        ret = self.request.go(url, data)
+        if ret.msg == 'OK':
+            self.ai = (ret.state.ai.x, ret.state.ai.y)
+            for p in ret.state.jobs:
+                __packages_now.append((p.x, p.y))
+                packages_now.append((p.x, p.y, p.value))
+            self.score = self.score + ret.reward
+            if cmp(self.__packages.sort(), __packages_now.sort()) != 0:
+                self.__packages = __packages_now
+                self.packages = packages_now
+                self.package_newest = True
+            else:
+                self.package_newest = False
+            self.end = ret.done
