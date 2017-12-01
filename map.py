@@ -72,9 +72,9 @@ class Map:
                 __packages_now.append((p['x'], p['y']))
                 packages_now.append((p['x'], p['y'], p['value']))
             self.score = self.score + ret['reward']
+            self.packages = packages_now
             if cmp(self.__packages.sort(), __packages_now.sort()) != 0:
                 self.__packages = __packages_now
-                self.packages = packages_now
                 self.package_newest = True
             else:
                 self.package_newest = False
